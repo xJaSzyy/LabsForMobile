@@ -17,12 +17,11 @@ class ViewModel : ViewModel() {
     var maxPage: Int = 1
     fun getCharacterList() {
         GlobalScope.launch(Dispatchers.Main) {
-            val mService: RetrofitServices = Common.retrofitService
-            val result = mService.getCharacterList(page)
-            if (result.isSuccessful) {
-                liveData.value = result.body()!!.results
+            val mService: RetrofitServices? = Common.retrofitService
+            val result = mService?.getCharacterList(page)
+            if (result?.isSuccessful == true) {
+                liveData.value = result.body()?.results
             }
         }
     }
-
 }

@@ -10,5 +10,5 @@ interface RetrofitServices {
     suspend fun getCharacterList(@Query("page") page: Int): Response<DataModel.Character>
 
     @GET("api/episode/{id}")
-    fun getEpisodeList(@Path("id") id: ArrayList<Int>): Call<List<DataModel.EpisodeResults>>
+    suspend fun getEpisodeList(@Path("id") id: ArrayList<Int>): Response<List<DataModel.EpisodeResults>>
 }

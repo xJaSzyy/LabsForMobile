@@ -14,10 +14,10 @@ import retrofit2.await
 import timber.log.Timber
 import kotlin.collections.ArrayList
 
-@OptIn(DelicateCoroutinesApi::class)
 @Suppress("UNCHECKED_CAST")
+@OptIn(DelicateCoroutinesApi::class)
 class CharacterActivity : AppCompatActivity() {
-    lateinit var adapter: CharacterAdapter
+    var adapter: CharacterAdapter? = null
     lateinit var episode: ArrayList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +29,7 @@ class CharacterActivity : AppCompatActivity() {
         val recyclerView: RecyclerView = findViewById(R.id.rcharview)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        episode = intent.getStringArrayListExtra("episode")!!
+        episode = intent.getStringArrayListExtra("episode") as ArrayList<String>
         for (i in episode.indices) {
             episode[i] = episode[i].replace("https://rickandmortyapi.com/api/episode/", "")
         }
@@ -37,15 +37,16 @@ class CharacterActivity : AppCompatActivity() {
         getEpisodeList(episode as ArrayList<Int>)
     }
 
-    @SuppressLint("SuspiciousIndentation")
     private fun getEpisodeList(episodes: ArrayList<Int>) {
-        val mService: RetrofitServices = Common.retrofitService
         GlobalScope.launch(Dispatchers.Main) {
-            val result = mService.getEpisodeList(episodes).await()
+            val mService: RetrofitServices? = Common.retrofitService
+            val result = mService?.getEpisodeList(episodes)
 
-            adapter = CharacterAdapter(result)
-            val recyclerList: RecyclerView = findViewById(R.id.rcharview)
-            recyclerList.adapter = adapter
+            if (result?.isSuccessful == true) {
+                adapter = result.body()?.let { CharacterAdapter(it) }
+                val recyclerList: RecyclerView = findViewById(R.id.rcharview)
+                recyclerList.adapter = adapter
+            }
         }
     }
 }
